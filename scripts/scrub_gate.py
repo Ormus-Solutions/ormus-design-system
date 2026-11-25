@@ -29,9 +29,9 @@ ODS_REQUIRE_BRAND=1 makes two things failures that are otherwise a notice: no
 ormus-brand checkout ("source not verified"), and no deny-list found at all.
 Run it before publishing:
   ODS_REQUIRE_BRAND=1 ORMUS_BRAND_DIR=<checkout> ./check.sh
-With a checkout, each lock's commit must be the previous lock's commit or a
-descendant of it (history order, then the working tree), so a rollback to an
-older brand commit fails.
+With a checkout, every lock's commit, on any ref, must be the working-tree
+lock's commit or an ancestor of it, so a rollback to an older brand commit
+fails, on this branch or on another one.
 
 The last line printed is always the "source:" line.
 
@@ -148,15 +148,48 @@ def all_lock_texts() -> list[str]:
 
 
 def check_forward(brand: Path, texts: list[str]) -> str:
-    """'' when each lock's commit is the previous one's or a descendant of it."""
+    """'' when every lock's commit, on any ref, is the working-tree lock's commit or
+    an ancestor of it. The working-tree lock is last in `texts`."""
     commits = [lock_commit(t) for t in texts]
-    for prev, cur in zip(commits, commits[1:]):
-        if prev == cur:
+    newest = commits[-1]
+    for cur in commits[:-1]:
+        if cur == newest:
             continue
-        ok = subprocess.run(["git", "-C", str(brand), "merge-base", "--is-ancestor", prev, cur],
+        ok = subprocess.run(["git", "-C", str(brand), "merge-base", "--is-ancestor", cur, newest],
                             capture_output=True)
         if ok.returncode != 0:
-            return f"the lock went back or sideways: {cur[:12]} is not a descendant of {prev[:12]}"
+            return (f"the lock went back or sideways: the brand commit {cur[:12]}, locked on some ref, "
+                    f"is not an ancestor of the current one {newest[:12]}")
+    return ""
+
+
+def check_each_step_forward(brand: Path) -> str:
+    """'' when no commit of any ref holds a lock older than its parent's lock, and the
+    working-tree lock is not older than HEAD's. A rollback on a branch that is not
+    checked out is caught here."""
+    def is_forward(older: str, newer: str) -> bool:
+        return older == newer or subprocess.run(
+            ["git", "-C", str(brand), "merge-base", "--is-ancestor", older, newer],
+            capture_output=True).returncode == 0
+
+    def lock_at(rev: str) -> str:
+        shown = subprocess.run(["git", "show", f"{rev}:SOURCE.lock"], capture_output=True)
+        return lock_commit(shown.stdout.decode("utf-8", errors="replace")) if shown.returncode == 0 else ""
+
+    rows = subprocess.run(["git", "rev-list", "--all", "--parents"],
+                          capture_output=True, text=True).stdout.splitlines()
+    for row in rows:
+        sha, *parents = row.split()
+        mine = lock_at(sha)
+        for parent in parents:
+            before = lock_at(parent)
+            if mine and before and not is_forward(before, mine):
+                return (f"the lock went back: commit {sha[:9]} locks brand {mine[:12]}, "
+                        f"older than its parent's {before[:12]}")
+    head = lock_at("HEAD")
+    now = lock_commit((ROOT / "SOURCE.lock").read_text(encoding="utf-8"))
+    if head and now and not is_forward(head, now):
+        return f"the lock went back in the working tree: {now[:12]} is older than HEAD's {head[:12]}"
     return ""
 
 
@@ -261,7 +294,10 @@ def run(argv: list[str]) -> int:
     if lock is None:
         return fail("SOURCE.lock does not follow its line grammar (see scripts/scrub_gate.py)")
 
-    require = os.environ.get("ODS_REQUIRE_BRAND") == "1"
+    flag = os.environ.get("ODS_REQUIRE_BRAND", "")
+    if flag not in ("", "1"):
+        return fail('ODS_REQUIRE_BRAND must be exactly "1" (any other value is refused, not ignored)')
+    require = flag == "1"
     if require and not named:
         default = Path("~/.config/playbooks/denylist.txt").expanduser()
         if not default.is_file() or not any(
@@ -282,7 +318,7 @@ def run(argv: list[str]) -> int:
             why = verify_lock_against_brand(brand, text)
             if why:
                 return fail(f"source check failed: {why}")
-        why = check_forward(brand, texts)
+        why = check_forward(brand, texts) or check_each_step_forward(brand)
         if why:
             return fail(f"source check failed: {why}")
         STATE["source"] = f"source: verified against the ormus-brand checkout ({len(texts)} lock(s) checked)"

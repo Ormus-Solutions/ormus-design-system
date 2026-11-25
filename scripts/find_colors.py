@@ -10,14 +10,18 @@ Prints `path:line: what` for each hit and ends with `colors: N`.
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_html  # noqa: E402
 
-SUFFIXES = {".css", ".scss", ".sass", ".less", ".html", ".htm", ".tsx", ".jsx", ".ts", ".js",
-            ".vue", ".svelte", ".astro", ".mdx"}
+SUFFIXES = {".css", ".scss", ".sass", ".less", ".pcss", ".styl", ".html", ".htm", ".tsx", ".jsx",
+            ".ts", ".js", ".vue", ".svelte", ".astro", ".mdx", ".svg", ".json"}
+# SVG and HTML presentation attributes that carry a color (JSX props of the same name too).
+ATTR = re.compile(r"""\b(fill|stroke|color|bgcolor|stop-color|flood-color|lighting-color)\s*=\s*["']([^"']+)["']""")
+ANCHOR = re.compile(r"""\b(?:xlink:)?href\s*=\s*["'][^"']*["']""")
 SKIP = {"node_modules", ".git", "vendor", "dist", "build", ".next", ".nuxt", ".svelte-kit"}
 
 
@@ -35,7 +39,12 @@ def scan(root: Path) -> list[str]:
             if line.lstrip().startswith("/*") and "*/" not in line:
                 in_comment = True
                 continue
-            for problem in check_html.color_problems(line):
+            line = ANCHOR.sub("href=x", line)  # #anchor links are not colors
+            problems = check_html.color_problems(line)
+            for _, value in ATTR.findall(line):
+                if value.strip().lower() not in check_html.NEUTRAL and not value.lower().startswith("url("):
+                    problems += check_html.color_problems(f"color:{value}")
+            for problem in dict.fromkeys(problems):
                 hits.append(f"{path.relative_to(root)}:{number}: {problem}")
     return hits
 

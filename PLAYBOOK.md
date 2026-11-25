@@ -308,14 +308,14 @@ stops under `prefers-reduced-motion`.
 
 ```bash
 EXC="--exclude-dir=node_modules --exclude-dir=.git --exclude-dir=vendor"
-# transition or animation declarations that do not use the curve (a "none" is fine)
-grep -rn -E "(transition|animation)[^;{}]*[;}]" PROJECT/SRC $EXC | grep -v -E "ormus-ease-reveal|(transition|animation):[[:space:]]*none"
+# lines that declare transition or animation without the curve (a "none" is fine)
+grep -rn -E "(^|[^-[:alnum:]_])(transition|animation)[[:space:]]*:" PROJECT/SRC $EXC | grep -v -E "ormus-ease-reveal|(transition|animation)[[:space:]]*:[[:space:]]*none"
 # reduced motion
 grep -rl "prefers-reduced-motion" PROJECT/SRC $EXC
 ```
 
 Verify: the two commands above.
-Expected: the first prints nothing (fix each line it prints); the second lists at least one file whenever the project has any transition or animation. The search reads CSS declarations only: Tailwind `transition`, `duration-*` and `animate-*` classes are not covered, so read those by eye and give them `ease-ormus-reveal`.
+Expected: the first prints nothing (fix each line it prints; when a declaration continues on the next lines, read them: the curve may sit there); the second lists at least one file whenever the project has any transition or animation. The search reads CSS declarations only: Tailwind `transition`, `duration-*` and `animate-*` classes are not covered, so read those by eye and give them `ease-ormus-reveal`.
 
 ### 16. Build, test and look
 

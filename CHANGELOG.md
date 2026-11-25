@@ -2,6 +2,17 @@
 
 Every change a reader should know about, newest first.
 
+## 0.1.3 - 2026-11-24
+
+- Gate: a lock older than its parent's lock fails on any ref, also on a branch
+  that is not checked out (`check_each_step_forward`); `ODS_REQUIRE_BRAND`
+  counts only the exact string `1` and refuses any other non-empty value.
+- `base.css` sets `opacity: 1` on the placeholder (Firefox dims it by default).
+- PLAYBOOK step 15 finds every line that declares `transition` or `animation`;
+  `check_import_order.py` compares columns and refuses `tokens.css.map`;
+  `find_colors.py` skips `#anchor` links and also reads svg, json, pcss, styl and
+  color attributes.
+
 ## 0.1.2 - 2026-11-24
 
 - `ODS_REQUIRE_BRAND=1` makes "source not verified" and a missing deny-list

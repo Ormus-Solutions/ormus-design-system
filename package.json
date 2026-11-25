@@ -1,6 +1,6 @@
 {
   "name": "@ormus/design-system",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "The Ormus design system for crew projects: tokens, the fusion component layer, a Tailwind preset and the marks an app needs. Synced from ormus-brand.",
   "license": "MIT",

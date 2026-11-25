@@ -21,18 +21,20 @@ ORDER = ("tokens.css", "fusion.css", "base.css")
 def check_text(text: str) -> list[str]:
     stripped = re.sub(r"/\*.*?\*/|<!--.*?-->", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text, flags=re.S)
     stripped = re.sub(r"(?m)^\s*//.*$", "", stripped)
-    at: dict[str, int] = {}
+    at: dict[str, tuple[int, int]] = {}
     for number, line in enumerate(stripped.splitlines(), 1):
         for name in ORDER:
-            if re.search(rf"(?<![\w.-]){re.escape(name)}\b", line) and name not in at:
-                at[name] = number
+            m = re.search(rf"(?<![\w.-]){re.escape(name)}(?![\w-]|\.\w)", line)
+            if m and name not in at:
+                at[name] = (number, m.start() + 1)
     problems: list[str] = []
     if "tokens.css" not in at:
         problems.append("tokens.css is not loaded (it must come first)")
     present = [(n, at[n]) for n in ORDER if n in at]
     for (a, la), (b, lb) in zip(present, present[1:]):
         if la >= lb:
-            problems.append(f"{a} (line {la}) must load before {b} (line {lb})")
+            problems.append(f"{a} (line {la[0]}, column {la[1]}) must load before {b} "
+                            f"(line {lb[0]}, column {lb[1]})")
     return problems
 
 

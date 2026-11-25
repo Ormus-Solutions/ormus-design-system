@@ -193,7 +193,10 @@ class Extras(unittest.TestCase):
         base = (ROOT / "base.css").read_text(encoding="utf-8")
         m = re.search(r"\.ormus-field::placeholder\s*\{([^}]*)\}", base)
         self.assertIsNotNone(m)
-        self.assertEqual(re.findall(r"color:\s*([^;]+);", m.group(1) if m else ""), ["var(--ormus-ink-muted)"])
+        block = m.group(1) if m else ""
+        self.assertEqual(re.findall(r"color:\s*([^;]+);", block), ["var(--ormus-ink-muted)"])
+        # Firefox dims a placeholder by default; the rule must set opacity to exactly 1.
+        self.assertEqual(re.findall(r"opacity:\s*([^;]+);", block), ["1"])
 
     def test_import_order_script(self) -> None:
         good = '@import "a/tokens.css";\n@import url("a/fusion.css");\n@import "a/base.css";\n'
@@ -203,6 +206,30 @@ class Extras(unittest.TestCase):
         self.assertTrue(check_import_order.check_text('/* tokens.css */\n@import "a/fusion.css";\n'))
         html = '<link rel="stylesheet" href="v/tokens.css">\n<link rel="stylesheet" href="v/fusion.css">\n'
         self.assertEqual(check_import_order.check_text(html), [])
+
+    def test_import_order_by_column_and_no_source_map(self) -> None:
+        one_line = '<link href="v/tokens.css"><link href="v/fusion.css">'
+        self.assertEqual(check_import_order.check_text(one_line), [])
+        self.assertTrue(check_import_order.check_text('<link href="v/fusion.css"><link href="v/tokens.css">'))
+        self.assertTrue(check_import_order.check_text('<link href="v/tokens.css.map">'))
+        self.assertTrue(check_import_order.check_text('@import "v/tokens.css.map";\n@import "v/fusion.css";'))
+
+    def test_find_colors_anchors_svg_json_and_attributes(self) -> None:
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "a.html").write_text('<a href="#abc123">x</a>\n<a xlink:href=\'#def456\'>y</a>\n',
+                                         encoding="utf-8")
+            self.assertEqual(find_colors.scan(root), [])
+            (root / "b.svg").write_text('<svg><path fill="#fff"/><path stroke="Gold"/>'
+                                        '<path fill="currentColor"/><path fill="url(#g1)"/></svg>',
+                                        encoding="utf-8")
+            self.assertEqual(len(find_colors.scan(root)), 2)
+            (root / "c.json").write_text('{"c": "color: #abcdef"}', encoding="utf-8")
+            (root / "d.pcss").write_text("a{color:red}", encoding="utf-8")
+            (root / "e.styl").write_text("a\n  color: rgb(1,2,3)\n", encoding="utf-8")
+            files = {h.split(":")[0] for h in find_colors.scan(root)}
+            self.assertEqual(files, {"b.svg", "c.json", "d.pcss", "e.styl"})
 
     def test_find_colors_counts_every_kind(self) -> None:
         import tempfile

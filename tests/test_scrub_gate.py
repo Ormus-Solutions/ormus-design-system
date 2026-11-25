@@ -215,6 +215,34 @@ class Gate(unittest.TestCase):
         self.assertNotEqual(res.returncode, 0)
         self.assertIn("went back", res.stdout + res.stderr)
 
+    def test_a_rollback_on_another_ref_fails(self) -> None:
+        css = self.repo / "tokens.css"
+        original = css.read_bytes()
+        sha1 = self.make_brand()
+        newer = original + f"/* {SYNCED_WORD} */\n".encode()
+        sha2 = self.make_brand({"tokens.css": newer})
+        css.write_bytes(newer)
+        self.lock_with("tokens.css", newer)
+        self.lock_commit(sha2)
+        self.reset_history()  # main: lock at the newer brand commit
+        git(self.repo, "switch", "-q", "-c", "side")
+        css.write_bytes(original)
+        self.lock_with("tokens.css", original)
+        self.lock_commit(sha1)
+        self.commit("older lock on a side branch")
+        git(self.repo, "switch", "-q", "main")
+        res = self.run_gate(extra_env=self.brand_env())
+        self.assertNotEqual(res.returncode, 0)
+        self.assertIn("went back", res.stdout + res.stderr)
+
+    def test_require_brand_counts_only_the_exact_string_1(self) -> None:
+        self.lock_commit(self.make_brand())
+        self.reset_history()
+        for value in ("true", "0", "yes", "11", " 1"):
+            res = self.run_gate(extra_env={**self.brand_env(), "ODS_REQUIRE_BRAND": value})
+            self.assertNotEqual(res.returncode, 0, value)
+            self.assertIn("exactly", res.stdout + res.stderr)
+
     def test_the_source_line_is_the_last_line(self) -> None:
         res = self.run_gate()
         self.assertTrue((res.stdout + res.stderr).strip().splitlines()[-1].startswith("source:"))

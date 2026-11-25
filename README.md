@@ -315,7 +315,7 @@ trusts the checksums in `SOURCE.lock`. Before the repo goes public, run:
 ODS_REQUIRE_BRAND=1 ORMUS_BRAND_DIR=<checkout> ./check.sh
 ```
 
-`ODS_REQUIRE_BRAND=1` turns "not verified" into a failure, and also fails when
+`ODS_REQUIRE_BRAND=1` (exactly `1`; any other value is refused) turns "not verified" into a failure, and also fails when
 no deny-list is found at all. With the checkout, each `SOURCE.lock` (current and
 historical) must match the brand's files at its commit, and each lock's commit
 must be the previous one or a descendant of it, so a rollback to an older brand

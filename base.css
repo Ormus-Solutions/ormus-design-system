@@ -47,7 +47,8 @@
   border: 1px solid var(--ormus-hairline);
   border-radius: var(--ormus-radius);
 }
-.ormus-field::placeholder { color: var(--ormus-ink-muted); }
+/* opacity: 1 because Firefox dims a placeholder by default, which would undo the contrast. */
+.ormus-field::placeholder { color: var(--ormus-ink-muted); opacity: 1; }
 .ormus-field:focus { border-color: var(--ormus-gold); }
 .ormus-field[aria-invalid="true"] { border-color: var(--ormus-danger); }
 .ormus-field:disabled { opacity: 0.45; cursor: not-allowed; }
