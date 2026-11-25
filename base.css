@@ -1,0 +1,78 @@
+/* ormus-design-system: base.css
+   NOT copied from ormus-brand. A small starter layer that this repo adds so
+   fusion.css is usable on a real page: body type, the heading sizes from
+   tokens.json (typeScale), a focus ring, a disabled state, a text field, a
+   chip and an error line. Every value is a --ormus-* variable or a typeScale
+   number, and tests/test_system.py checks the typeScale numbers against
+   tokens.json. Load it after tokens.css and fusion.css. Optional.
+   Proposed upstream: if ormus-brand adopts any of it, delete it here. */
+
+/* Type (typeScale in tokens.json) */
+.surface-firm {
+  font-family: var(--ormus-font-sans);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+.surface-firm h1 { font-size: 2.25rem;  line-height: 2.5rem;  }
+.surface-firm h2 { font-size: 1.875rem; line-height: 2.25rem; letter-spacing: -0.025em; }
+.surface-firm h3 { font-size: 1.5rem;   line-height: 2rem;    }
+
+/* Buttons: <button> and <a> need the page font, and a visible keyboard focus. */
+.fusion-btn {
+  font-family: var(--ormus-font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.surface-firm :focus-visible {
+  outline: 2px solid var(--ormus-gold);
+  outline-offset: 2px;
+}
+.fusion-btn:disabled,
+.fusion-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Fields: 8px, hairline border, gold border on focus. */
+.ormus-field {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: var(--ormus-ink);
+  background: var(--ormus-bg-muted);
+  border: 1px solid var(--ormus-hairline);
+  border-radius: var(--ormus-radius);
+}
+.ormus-field::placeholder { color: var(--ormus-ink-muted); }
+.ormus-field:focus { border-color: var(--ormus-gold); }
+.ormus-field[aria-invalid="true"] { border-color: var(--ormus-danger); }
+.ormus-field:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Chips and tags: pills, mono, quiet. */
+.ormus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.7rem;
+  font-family: var(--ormus-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ormus-ink-muted);
+  border: 1px solid var(--ormus-hairline);
+  border-radius: var(--ormus-radius-pill);
+}
+/* An identity accent marks what a thing is; the dot is never the only carrier. */
+.ormus-chip__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--ormus-radius-pill);
+  background: var(--chip-accent, var(--ormus-dim));
+}
+
+/* Errors: danger is for errors only, and always comes with words. */
+.ormus-error { color: var(--ormus-danger); }

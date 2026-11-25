@@ -1,0 +1,39 @@
+/* Tailwind v4 theme for the Ormus design system.
+   Import it after tailwindcss, and load tokens.css before it:
+
+     @import "tailwindcss";
+     @import "@ormus/design-system/tokens.css";
+     @import "@ormus/design-system/tailwind/theme.css";
+
+   `inline` makes each utility point at the var(--ormus-*) itself, so no hex
+   is repeated here. Utilities: bg-ormus-gold, text-ormus-ink, font-display,
+   rounded-ormus, rounded-ormus-container, rounded-ormus-pill, ease-ormus-reveal. */
+@theme inline {
+  --color-ormus-midnight: var(--ormus-midnight);
+  --color-ormus-deep: var(--ormus-deep);
+  --color-ormus-gold: var(--ormus-gold);
+  --color-ormus-gold-bright: var(--ormus-gold-bright);
+  --color-ormus-ink: var(--ormus-ink);
+  --color-ormus-ink-muted: var(--ormus-ink-muted);
+  --color-ormus-dim: var(--ormus-dim);
+  --color-ormus-hairline: var(--ormus-hairline);
+  --color-ormus-on-gold: var(--ormus-on-gold);
+  --color-ormus-code-bg: var(--ormus-code-bg);
+  --color-ormus-danger: var(--ormus-danger);
+  --color-ormus-accent-rose: var(--ormus-accent-rose);
+  --color-ormus-accent-teal: var(--ormus-accent-teal);
+  --color-ormus-accent-leaf: var(--ormus-accent-leaf);
+  --color-ormus-accent-ember: var(--ormus-accent-ember);
+  --color-ormus-accent-sky: var(--ormus-accent-sky);
+  --color-ormus-accent-iris: var(--ormus-accent-iris);
+
+  --font-display: var(--ormus-font-display);
+  --font-sans: var(--ormus-font-sans);
+  --font-mono: var(--ormus-font-mono);
+
+  --radius-ormus: var(--ormus-radius);
+  --radius-ormus-container: var(--ormus-radius-container);
+  --radius-ormus-pill: var(--ormus-radius-pill);
+
+  --ease-ormus-reveal: var(--ormus-ease-reveal);
+}

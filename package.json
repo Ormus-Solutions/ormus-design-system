@@ -1,0 +1,21 @@
+{
+  "name": "@ormus/design-system",
+  "version": "0.1.1",
+  "private": true,
+  "description": "The Ormus design system for crew projects: tokens, the fusion component layer, a Tailwind preset and the marks an app needs. Synced from ormus-brand.",
+  "license": "MIT",
+  "type": "commonjs",
+  "files": ["tokens.css", "tokens.json", "fusion.css", "base.css", "tailwind", "assets", "SOURCE.lock", "BRAND.md"],
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./tokens.json": "./tokens.json",
+    "./fusion.css": "./fusion.css",
+    "./base.css": "./base.css",
+    "./tailwind/preset.cjs": "./tailwind/preset.cjs",
+    "./tailwind/theme.css": "./tailwind/theme.css",
+    "./assets/*": "./assets/*"
+  },
+  "scripts": {
+    "check": "bash check.sh"
+  }
+}

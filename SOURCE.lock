@@ -1,0 +1,13 @@
+# Written by scripts/sync.sh. Do not edit by hand.
+# tests/test_drift.py checks every copied file against this record.
+source ormus-brand (internal to Ormus Solutions)
+commit 47b5c20718ad44bbca429bef4023bd5410fc237c
+version 0.4.0
+sha256 57aa48a1b97e4ecf8b4615280c13ab30ef81c39fa3fa90549708ffbc94b6862d  tokens.css
+sha256 9d60ae17ec2b4ca79473d6ddcf2f8d6b9be3ec430157a97abd73bfb494f88ea3  tokens.json
+sha256 bb0a520604e05c9d35506857989e410587501db418f0b91fecc93143f326f540  fusion.css
+sha256 76a6dc04ecc9b0c01b3c61dffc5e6c845a52fd311e6035e9a2ddf2cd6d36c334  assets/midnight-lacquer.jpg
+sha256 67a2b826db0dfc1338acc43b3c273d7b63e2591f10296eb977b657da2e12dac3  assets/marks/ormus-mark-gold-1024.png
+sha256 4a7a54db7a0bade0f72d2dd20a2fa7a5c11e4294d3ade47399c7be6744bdec58  assets/marks/ormus-mark-gold-512.png
+sha256 fba295dad3763a9960de8d84f9c58c8218ee052b7ee6754b7d672b3f3d143f95  assets/marks/ormus-mark-gold-128.png
+sha256 01ca38f2f9f2db0eb18d228b38821f67a817ca0ebd17d79f3d752d012240b346  assets/marks/kintsugi-mark.png

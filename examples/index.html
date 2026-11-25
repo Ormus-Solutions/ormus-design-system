@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ormus design system: demo</title>
+  <meta name="description" content="Palette, type, buttons, cards, labels and states of the Ormus design system.">
+  <link rel="icon" type="image/png" href="../assets/marks/ormus-mark-gold-128.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../fusion.css">
+  <link rel="stylesheet" href="../base.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body class="surface-firm">
+  <main class="demo">
+    <header>
+      <img class="demo__mark" src="../assets/marks/ormus-mark-gold-128.png" alt="Ormus mark">
+      <span class="mono-label">ormus design system</span>
+      <h1>Digital systems and tools, cast in liquid gold.</h1>
+      <p>A midnight lacquer surface, gold as the one raised voice, serif display type over engineering mono. This page uses only the files of this repo and three web fonts.</p>
+    </header>
+
+    <section id="palette" aria-labelledby="palette-h">
+      <span class="mono-label">palette</span>
+      <h2 id="palette-h">Colors</h2>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-midnight)"></div>
+          <div class="swatch__meta"><strong>Midnight</strong><code data-token="--ormus-midnight">#14213d</code><span>surface background</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-deep)"></div>
+          <div class="swatch__meta"><strong>Deep</strong><code data-token="--ormus-deep">#0e1830</code><span>page ground, opaque panels</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-gold)"></div>
+          <div class="swatch__meta"><strong>Gold</strong><code data-token="--ormus-gold">#d29e3d</code><span>the one raised voice</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-gold-bright)"></div>
+          <div class="swatch__meta"><strong>Gold bright</strong><code data-token="--ormus-gold-bright">#e0b258</code><span>pointer over, active</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-ink)"></div>
+          <div class="swatch__meta"><strong>Ink</strong><code data-token="--ormus-ink">#eceae3</code><span>primary text</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-ink-muted)"></div>
+          <div class="swatch__meta"><strong>Ink muted</strong><code data-token="--ormus-ink-muted">#a5b0c4</code><span>secondary text</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-dim)"></div>
+          <div class="swatch__meta"><strong>Dim</strong><code data-token="--ormus-dim">#6d7891</code><span>quiet text, 24px and up</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-hairline)"></div>
+          <div class="swatch__meta"><strong>Hairline</strong><code data-token="--ormus-hairline">rgba(236, 234, 227, 0.12)</code><span>borders</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-on-gold)"></div>
+          <div class="swatch__meta"><strong>On gold</strong><code data-token="--ormus-on-gold">#1a1407</code><span>text on gold fills</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-code-bg)"></div>
+          <div class="swatch__meta"><strong>Code</strong><code data-token="--ormus-code-bg">#0b1226</code><span>code panels</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-danger)"></div>
+          <div class="swatch__meta"><strong>Danger</strong><code data-token="--ormus-danger">#d44f4f</code><span>errors only</span></div>
+        </div>
+      </div>
+      <h3 style="margin-top: 2.5rem">Identity accents</h3>
+      <p>Six accents mark what a thing is: a space, an author, a group. Gold stays the only accent for action.</p>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-accent-rose)"></div>
+          <div class="swatch__meta"><strong>Rose</strong><code data-token="--ormus-accent-rose">#e0849a</code><span>identity, never state alone</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-accent-teal)"></div>
+          <div class="swatch__meta"><strong>Teal</strong><code data-token="--ormus-accent-teal">#4fbcae</code><span>identity, never state alone</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-accent-leaf)"></div>
+          <div class="swatch__meta"><strong>Leaf</strong><code data-token="--ormus-accent-leaf">#86c272</code><span>identity, never state alone</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-accent-ember)"></div>
+          <div class="swatch__meta"><strong>Ember</strong><code data-token="--ormus-accent-ember">#e8955f</code><span>identity, never state alone</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-accent-sky)"></div>
+          <div class="swatch__meta"><strong>Sky</strong><code data-token="--ormus-accent-sky">#78a6ee</code><span>identity, never state alone</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip" style="background: var(--ormus-accent-iris)"></div>
+          <div class="swatch__meta"><strong>Iris</strong><code data-token="--ormus-accent-iris">#ad92e6</code><span>identity, never state alone</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="type" aria-labelledby="type-h">
+      <span class="mono-label">type</span>
+      <h2 id="type-h">Three families</h2>
+      <div class="specimen">
+        <div class="specimen__row"><span class="mono-label">h1 / 300</span><p class="specimen__sample specimen__h1">Cormorant Garamond light</p></div>
+        <div class="specimen__row"><span class="mono-label">h2 / 400</span><h2 class="specimen__sample">Cormorant Garamond regular</h2></div>
+        <div class="specimen__row"><span class="mono-label">h3 / 400</span><h3 class="specimen__sample">Headings never go bold</h3></div>
+        <div class="specimen__row"><span class="mono-label">body / Inter</span><p class="specimen__sample">Plain confident sentences. Lead with the answer, explain after. Body text is Inter at 1rem on a 1.8 line.</p></div>
+        <div class="specimen__row"><span class="mono-label">label / mono</span><p class="specimen__sample mono-label">JetBrains Mono, 0.72rem, 0.08em tracking</p></div>
+      </div>
+    </section>
+
+    <section id="buttons" aria-labelledby="buttons-h">
+      <span class="mono-label">buttons</span>
+      <h2 id="buttons-h">One loud, one quiet</h2>
+      <div class="row">
+        <button type="button" class="fusion-btn fusion-btn--primary">Start a conversation</button>
+        <button type="button" class="fusion-btn fusion-btn--ghost">Read the notes</button>
+        <button type="button" class="fusion-btn fusion-btn--ghost" disabled>Unavailable</button>
+        <a class="fusion-btn fusion-btn--ghost" href="#palette">A link as a button</a>
+      </div>
+      <p style="margin-top: 1rem; color: var(--ormus-ink-muted)">The gold fill is for the one primary action of a view. Point at the buttons and press Tab to see the states.</p>
+    </section>
+
+    <section id="cards" aria-labelledby="cards-h">
+      <span class="mono-label">cards</span>
+      <h2 id="cards-h">Gold top hairline, lift when pointed at</h2>
+      <div class="grid-3">
+        <article class="fusion-card fusion-reveal"><span class="mono-label mono-label--gold">surface</span><h3>Midnight lacquer</h3><p>One texture, painted on a fixed layer so tiling never shows.</p></article>
+        <article class="fusion-card fusion-reveal"><span class="mono-label">material</span><h3>Gold dust</h3><p>Specks drift on a 60 second loop. Reduced motion stills them.</p></article>
+        <article class="fusion-card fusion-reveal"><span class="mono-label">motion</span><h3>One curve</h3><p>Everything eases on cubic-bezier(0.16, 1, 0.3, 1).</p></article>
+      </div>
+    </section>
+
+    <section id="labels" aria-labelledby="labels-h">
+      <span class="mono-label">labels</span>
+      <h2 id="labels-h">Micro-labels, chips and shape</h2>
+      <div class="row" style="margin-bottom: 1.5rem">
+        <span class="mono-label">section label</span>
+        <span class="mono-label mono-label--gold">raised label</span>
+          <span class="ormus-chip" style="--chip-accent: var(--ormus-accent-rose)"><span class="ormus-chip__dot"></span>rose</span>
+          <span class="ormus-chip" style="--chip-accent: var(--ormus-accent-teal)"><span class="ormus-chip__dot"></span>teal</span>
+          <span class="ormus-chip" style="--chip-accent: var(--ormus-accent-leaf)"><span class="ormus-chip__dot"></span>leaf</span>
+          <span class="ormus-chip" style="--chip-accent: var(--ormus-accent-ember)"><span class="ormus-chip__dot"></span>ember</span>
+          <span class="ormus-chip" style="--chip-accent: var(--ormus-accent-sky)"><span class="ormus-chip__dot"></span>sky</span>
+          <span class="ormus-chip" style="--chip-accent: var(--ormus-accent-iris)"><span class="ormus-chip__dot"></span>iris</span>
+      </div>
+      <div class="shapes">
+        <div class="shape shape--key">8px keys, buttons, fields</div>
+        <div class="shape shape--container">14px cards, groups</div>
+        <div class="shape shape--pill">pill chips</div>
+      </div>
+    </section>
+
+    <section id="states" aria-labelledby="states-h">
+      <span class="mono-label">states</span>
+      <h2 id="states-h">Fields and intensity</h2>
+      <div class="states">
+        <div>
+          <label class="mono-label" for="f-name">Name</label>
+          <input class="ormus-field" id="f-name" type="text" placeholder="Focus me to see the gold border">
+        </div>
+        <div>
+          <label class="mono-label" for="f-mail">Contact</label>
+          <input class="ormus-field" id="f-mail" type="text" value="not a contact" aria-invalid="true" aria-describedby="f-mail-err">
+          <p class="ormus-error" id="f-mail-err">Error: enter a contact in the form name at example dot com.</p>
+        </div>
+        <div>
+          <label class="mono-label" for="f-off">Locked</label>
+          <input class="ormus-field" id="f-off" type="text" value="Read only for now" disabled>
+        </div>
+      </div>
+      <p style="margin-top: 2rem">State and class read through intensity, and a state in color also keeps a mark or words.</p>
+      <ul class="intensity" aria-label="The four intensities">
+        <li>gold</li><li>ink</li><li>ink muted</li><li>dim, 24px up</li>
+      </ul>
+    </section>
+
+    <footer>
+      <img src="../assets/marks/kintsugi-mark.png" alt="Ormus kintsugi mark">
+      <p>The kintsugi mark closes a page, a deck or a sign-off.</p>
+    </footer>
+  </main>
+  <script src="demo.js" defer></script>
+</body>
+</html>

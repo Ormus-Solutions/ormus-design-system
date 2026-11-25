@@ -1,0 +1,10 @@
+# The files copied from ormus-brand, one path per line (same path here and there).
+# scripts/sync.sh copies them; tests/test_drift.py checks them.
+tokens.css
+tokens.json
+fusion.css
+assets/midnight-lacquer.jpg
+assets/marks/ormus-mark-gold-1024.png
+assets/marks/ormus-mark-gold-512.png
+assets/marks/ormus-mark-gold-128.png
+assets/marks/kintsugi-mark.png
