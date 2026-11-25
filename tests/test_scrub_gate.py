@@ -42,6 +42,7 @@ class Gate(unittest.TestCase):
                  extra_env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         env = {**ENV, "PLAYBOOK_DENYLIST": str(denylist or self.denylist)}
         env.pop("ORMUS_BRAND_DIR", None)
+        env.pop("ODS_REQUIRE_BRAND", None)
         env.update(extra_env or {})
         return subprocess.run(["bash", "scripts/scrub_gate.sh"], cwd=self.repo, env=env,
                               capture_output=True, text=True)
