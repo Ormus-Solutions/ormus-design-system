@@ -109,7 +109,7 @@ class Gate(unittest.TestCase):
     def test_without_a_checkout_it_says_the_source_was_not_verified(self) -> None:
         res = self.run_gate()
         self.assertEqual(res.returncode, 0)
-        self.assertIn("source: not verified", res.stdout)
+        self.assertIn("source: NOT VERIFIED", res.stdout)
 
     def test_a_locked_commit_the_checkout_lacks_fails(self) -> None:
         self.make_brand()
@@ -159,6 +159,68 @@ class Gate(unittest.TestCase):
         self.commit("restored")
         res = self.run_gate(extra_env=self.brand_env())
         self.assertNotEqual(res.returncode, 0)
+
+    # --- ODS_REQUIRE_BRAND, forward-only locks, source line last ---------------
+    def test_require_brand_fails_without_a_checkout(self) -> None:
+        res = self.run_gate(extra_env={"ODS_REQUIRE_BRAND": "1"})
+        self.assertNotEqual(res.returncode, 0)
+        self.assertIn("NOT VERIFIED", res.stdout + res.stderr)
+
+    def test_require_brand_passes_with_a_matching_checkout(self) -> None:
+        self.lock_commit(self.make_brand())
+        self.reset_history()
+        res = self.run_gate(extra_env={**self.brand_env(), "ODS_REQUIRE_BRAND": "1"})
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_require_brand_fails_when_no_denylist_is_found(self) -> None:
+        self.lock_commit(self.make_brand())
+        self.reset_history()
+        home = self.tmp / "emptyhome"
+        home.mkdir()
+        res = self.run_gate(extra_env={**self.brand_env(), "ODS_REQUIRE_BRAND": "1",
+                                       "PLAYBOOK_DENYLIST": "", "HOME": str(home)})
+        self.assertNotEqual(res.returncode, 0)
+        self.assertIn("no deny-list", res.stdout + res.stderr)
+
+    def test_a_forward_resync_passes_the_order_check(self) -> None:
+        css = self.repo / "tokens.css"
+        original = css.read_bytes()
+        self.lock_commit(self.make_brand())
+        self.reset_history()
+        newer = original + f"/* {SYNCED_WORD} */\n".encode()
+        sha2 = self.make_brand({"tokens.css": newer})
+        css.write_bytes(newer)
+        self.lock_with("tokens.css", newer)
+        self.lock_commit(sha2)
+        self.commit("forward resync")
+        res = self.run_gate(extra_env=self.brand_env())
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+
+    def test_a_rollback_to_an_older_brand_commit_fails(self) -> None:
+        css = self.repo / "tokens.css"
+        original = css.read_bytes()
+        sha1 = self.make_brand()
+        newer = original + f"/* {SYNCED_WORD} */\n".encode()
+        sha2 = self.make_brand({"tokens.css": newer})
+        css.write_bytes(newer)
+        self.lock_with("tokens.css", newer)
+        self.lock_commit(sha2)
+        self.reset_history()
+        css.write_bytes(original)
+        self.lock_with("tokens.css", original)
+        self.lock_commit(sha1)
+        self.commit("rollback")
+        res = self.run_gate(extra_env=self.brand_env())
+        self.assertNotEqual(res.returncode, 0)
+        self.assertIn("went back", res.stdout + res.stderr)
+
+    def test_the_source_line_is_the_last_line(self) -> None:
+        res = self.run_gate()
+        self.assertTrue((res.stdout + res.stderr).strip().splitlines()[-1].startswith("source:"))
+        self.lock_commit(self.make_brand())
+        self.reset_history()
+        res = self.run_gate(extra_env=self.brand_env())
+        self.assertTrue(res.stdout.strip().splitlines()[-1].startswith("source: verified"))
 
     # --- H1: only the exact bytes the lock names are excused ---------------
     def test_modified_synced_file_is_not_excused(self) -> None:

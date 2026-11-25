@@ -306,6 +306,21 @@ When an ormus-brand checkout is at hand (`ORMUS_BRAND_DIR`, or a sibling
 folder), the gate also checks every lock against the brand's own files at the
 locked commit; otherwise it prints that the source was not verified.
 
+## Before publishing
+
+Without an ormus-brand checkout the gate only prints `source: NOT VERIFIED` and
+trusts the checksums in `SOURCE.lock`. Before the repo goes public, run:
+
+```sh
+ODS_REQUIRE_BRAND=1 ORMUS_BRAND_DIR=<checkout> ./check.sh
+```
+
+`ODS_REQUIRE_BRAND=1` turns "not verified" into a failure, and also fails when
+no deny-list is found at all. With the checkout, each `SOURCE.lock` (current and
+historical) must match the brand's files at its commit, and each lock's commit
+must be the previous one or a descendant of it, so a rollback to an older brand
+commit fails. The last line of the gate's output is always the `source:` line.
+
 ## Credits and license
 
 Built for the OS Crew by Ormus Solutions. Code and CSS: MIT ([LICENSE](LICENSE)).

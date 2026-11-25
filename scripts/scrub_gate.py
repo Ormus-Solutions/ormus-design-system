@@ -25,6 +25,16 @@ sha256 of `git -C BRAND show COMMIT:path` for that lock's commit, and a commit
 the checkout lacks fails. Without a checkout the gate says the source was not
 verified.
 
+ODS_REQUIRE_BRAND=1 makes two things failures that are otherwise a notice: no
+ormus-brand checkout ("source not verified"), and no deny-list found at all.
+Run it before publishing:
+  ODS_REQUIRE_BRAND=1 ORMUS_BRAND_DIR=<checkout> ./check.sh
+With a checkout, each lock's commit must be the previous lock's commit or a
+descendant of it (history order, then the working tree), so a rollback to an
+older brand commit fails.
+
+The last line printed is always the "source:" line.
+
 Usage: scripts/scrub_gate.py            (run from anywhere; scrub_gate.sh calls it)
 """
 from __future__ import annotations
@@ -120,16 +130,34 @@ def verify_lock_against_brand(brand: Path, text: str) -> str:
 
 
 def all_lock_texts() -> list[str]:
-    """The working-tree SOURCE.lock and every distinct SOURCE.lock held by a commit of any ref."""
-    texts = [(ROOT / "SOURCE.lock").read_text(encoding="utf-8")]
-    revs = subprocess.run(["git", "rev-list", "--all"], capture_output=True, text=True).stdout.split()
+    """Each distinct SOURCE.lock in history order (oldest first), then the working-tree one."""
+    texts: list[str] = []
+    revs = subprocess.run(["git", "rev-list", "--all", "--reverse", "--topo-order"],
+                          capture_output=True, text=True).stdout.split()
     for rev in revs:
         shown = subprocess.run(["git", "show", f"{rev}:SOURCE.lock"], capture_output=True)
         if shown.returncode == 0:
             text = shown.stdout.decode("utf-8", errors="replace")
             if text not in texts:
                 texts.append(text)
+    current = (ROOT / "SOURCE.lock").read_text(encoding="utf-8")
+    if current in texts:
+        texts.remove(current)
+    texts.append(current)
     return texts
+
+
+def check_forward(brand: Path, texts: list[str]) -> str:
+    """'' when each lock's commit is the previous one's or a descendant of it."""
+    commits = [lock_commit(t) for t in texts]
+    for prev, cur in zip(commits, commits[1:]):
+        if prev == cur:
+            continue
+        ok = subprocess.run(["git", "-C", str(brand), "merge-base", "--is-ancestor", prev, cur],
+                            capture_output=True)
+        if ok.returncode != 0:
+            return f"the lock went back or sideways: {cur[:12]} is not a descendant of {prev[:12]}"
+    return ""
 
 
 def sha256(data: bytes) -> str:
@@ -194,9 +222,22 @@ def history_is_clean_apart_from_matching_blobs() -> tuple[bool, str]:
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+STATE = {"source": ""}
+
+
 def main(argv: list[str]) -> int:
     if argv[:1] == ["--index-filter"]:
         return index_filter()
+    code = run(argv)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    if STATE["source"]:
+        print(STATE["source"], file=sys.stderr if code else sys.stdout)
+    return code
+
+
+def run(argv: list[str]) -> int:
+    _ = argv
     os.chdir(ROOT)
 
     named = os.environ.get("PLAYBOOK_DENYLIST")
@@ -220,18 +261,31 @@ def main(argv: list[str]) -> int:
     if lock is None:
         return fail("SOURCE.lock does not follow its line grammar (see scripts/scrub_gate.py)")
 
+    require = os.environ.get("ODS_REQUIRE_BRAND") == "1"
+    if require and not named:
+        default = Path("~/.config/playbooks/denylist.txt").expanduser()
+        if not default.is_file() or not any(
+                x.strip() and not x.strip().startswith("#")
+                for x in default.read_text(encoding="utf-8", errors="replace").splitlines()):
+            return fail("ODS_REQUIRE_BRAND=1 and no deny-list was found (set PLAYBOOK_DENYLIST)")
+
     brand, problem = brand_checkout()
     if problem:
         return fail(problem)
-    source_line = "source: not verified (no ormus-brand checkout; set ORMUS_BRAND_DIR)"
-    if brand is not None:
+    if brand is None:
+        STATE["source"] = "source: NOT VERIFIED (no ormus-brand checkout; set ORMUS_BRAND_DIR)"
+        if require:
+            return fail("ODS_REQUIRE_BRAND=1 and no ormus-brand checkout was found")
+    else:
         texts = all_lock_texts()
         for text in texts:
             why = verify_lock_against_brand(brand, text)
             if why:
                 return fail(f"source check failed: {why}")
-        source_line = f"source: verified against the ormus-brand checkout ({len(texts)} lock(s) checked)"
-    print(source_line)
+        why = check_forward(brand, texts)
+        if why:
+            return fail(f"source check failed: {why}")
+        STATE["source"] = f"source: verified against the ormus-brand checkout ({len(texts)} lock(s) checked)"
 
     res = run_scrub(ROOT)
     output = res.stdout + res.stderr

@@ -2,6 +2,13 @@
 
 Every change a reader should know about, newest first.
 
+## 0.1.2 - 2026-11-24
+
+- `ODS_REQUIRE_BRAND=1` makes "source not verified" and a missing deny-list
+  failures (README, "Before publishing"). With a checkout, each lock's commit
+  must be the previous lock's commit or a descendant, so a rollback fails. The
+  gate prints the `source:` line last.
+
 ## 0.1.1 - 2026-11-24
 
 - First release. `tokens.css`, `tokens.json`, `fusion.css` and the marks and
